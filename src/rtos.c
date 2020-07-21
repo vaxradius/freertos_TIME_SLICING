@@ -150,6 +150,29 @@ vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName)
     }
 }
 
+void
+TaskA(void *pvParameters)
+{
+	uint32_t count = 0;
+	while(1)
+	{
+		am_util_delay_ms(100);
+		if((++count % 10)==0)
+			am_util_debug_printf("TaskA(%d)...\r\n", count);
+	}
+}
+
+void
+TaskB(void *pvParameters)
+{
+	uint32_t count = 0;
+	while(1)
+	{
+		am_util_delay_ms(100);
+		if((++count % 10)==0)
+			am_util_debug_printf("TaskB(%d)...\r\n", count);
+	}
+}
 
 //*****************************************************************************
 //
@@ -172,12 +195,15 @@ setup_task(void *pvParameters)
     //
     // Run setup functions.
     //
-    LedTaskSetup();
-    disable_print_interface();
+    //LedTaskSetup();
+    //disable_print_interface();
     //
     // Create the functional tasks
     //
-    xTaskCreate(LedTask, "LEDTask", 512, 0, 3, &led_task_handle);
+    //xTaskCreate(LedTask, "LEDTask", 512, 0, 3, &led_task_handle);
+    xTaskCreate(TaskA, "TaskA", 512, 0, 4, NULL);
+	xTaskCreate(TaskB, "TaskB", 512, 0, 4, NULL);
+	
     //
     // The setup operations are complete, so suspend the setup task now.
     //
